@@ -323,7 +323,7 @@ packToken ListOnListOperation(const packToken& p_left, const packToken& p_right,
   }
 }
 
-#include <extensions/cparse_extensions.h>
+#include "../extensions/cparse_extensions.h"
 
 struct Startup {
   Startup() {
@@ -340,6 +340,7 @@ struct Startup {
     opp.add("==", 9); opp.add("!=", 9);
     opp.add("&&", 13);
     opp.add("||", 14);
+    opp.add(":=",15);
     opp.add("=", 15); opp.add(":", 15);
     opp.add(",", 16);
 
@@ -350,6 +351,7 @@ struct Startup {
     // Link operations to respective operators:
     opMap_t& opMap = calculator::Default().opMap;
     opMap.add({ANY_TYPE, "=", ANY_TYPE}, &Assign);
+    opMap.add({ANY_TYPE, ":=", ANY_TYPE}, &Assign);
     opMap.add({ANY_TYPE, ",", ANY_TYPE}, &Comma);
     opMap.add({ANY_TYPE, ":", ANY_TYPE}, &Colon);
     opMap.add({ANY_TYPE, "==", ANY_TYPE}, &Equal);
