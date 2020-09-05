@@ -323,6 +323,8 @@ packToken ListOnListOperation(const packToken& p_left, const packToken& p_right,
   }
 }
 
+#include <extensions/cparse_extensions.h>
+
 struct Startup {
   Startup() {
     // Create the operator precedence map based on C++ default
@@ -343,6 +345,7 @@ struct Startup {
 
     // Add unary operators:
     opp.addUnary("+",  3); opp.addUnary("-", 3);
+	opp.addUnary("!",  3);
 
     // Link operations to respective operators:
     opMap_t& opMap = calculator::Default().opMap;
@@ -364,6 +367,7 @@ struct Startup {
     opMap.add({NUM, ANY_OP, STR}, &NumberOnStringOperation);
     opMap.add({LIST, ANY_OP, NUM}, &ListOnNumberOperation);
     opMap.add({LIST, ANY_OP, LIST}, &ListOnListOperation);
+    opMap.add({UNARY, "!", BOOL}, &negation);
   }
 } __CPARSE_STARTUP;
 
