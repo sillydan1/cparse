@@ -1149,3 +1149,17 @@ TEST_CASE("Variable UTF8 name support") {
   calc.compile("€€€ + 5", v1);
   REQUIRE(calc.eval().asInt() == 10);
 }
+
+TEST_CASE("TTA language extensions") {
+  TokenMap tm;
+  // := Operator
+  tm["a"] = 0;
+  REQUIRE(tm["a"].asInt() == 0);
+  REQUIRE(calculator::calculate("a := 5", tm).asInt() == 5);
+  REQUIRE(tm["a"].asInt() == 5);
+  // ! Unary Operator
+  tm["b"] = false;
+  REQUIRE(tm["b"].asBool() == false);
+  REQUIRE(calculator::calculate("!b", tm).asBool() == true);
+  
+}
