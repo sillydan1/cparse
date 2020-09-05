@@ -1,6 +1,5 @@
 #ifndef CPARSE_EXTENSIONS_H
-#define CPARSE_EXTENSIONS_H
-#include <shunting-yard.h>
+#define CPARSE_EXTENSIONS_Hb
 
 packToken negation(const packToken& left, const packToken& right,
                  evaluationData* data) {
