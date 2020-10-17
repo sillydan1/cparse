@@ -340,15 +340,19 @@ struct Startup {
     opp.add("==", 9); opp.add("!=", 9);
     opp.add("&&", 13);
     opp.add("||", 14);
-    opp.add("=", 15); opp.add(":", 15);
-    opp.add(",", 16);
+    opp.add(":=", 15);
+    opp.add("=", 16);
+    opp.add(":", 16);
+    opp.add(",", 17);
 
     // Add unary operators:
-    opp.addUnary("+",  3); opp.addUnary("-", 3);
+    opp.addUnary("+",  3);
+    opp.addUnary("-", 3);
 	opp.addUnary("!",  3);
 
     // Link operations to respective operators:
     opMap_t& opMap = calculator::Default().opMap;
+    opMap.add({ANY_TYPE, ":=", ANY_TYPE}, &Assign);
     opMap.add({ANY_TYPE, "=", ANY_TYPE}, &Assign);
     opMap.add({ANY_TYPE, ",", ANY_TYPE}, &Comma);
     opMap.add({ANY_TYPE, ":", ANY_TYPE}, &Colon);
