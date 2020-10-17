@@ -65,17 +65,17 @@ packToken Colon(const packToken& left, const packToken& right, evaluationData* d
 }
 
 packToken Equal(const packToken& left, const packToken& right, evaluationData* data) {
-  if (left->type == VAR || right->type == VAR) {
+  /*if (left->type == VAR || right->type == VAR) {
     throw undefined_operation(data->op, left, right);
-  }
+  }*/
 
   return left == right;
 }
 
 packToken Different(const packToken& left, const packToken& right, evaluationData* data) {
-  if (left->type == VAR || right->type == VAR) {
+  /*if (left->type == VAR || right->type == VAR) {
     throw undefined_operation(data->op, left, right);
-  }
+  }*/
 
   return left != right;
 }
