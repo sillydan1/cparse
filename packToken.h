@@ -3,6 +3,7 @@
 
 #include <string>
 
+#define PACK_IS_TIMER true
 // Encapsulate TokenBase* into a friendlier interface
 class packToken {
   TokenBase* base;
@@ -26,8 +27,8 @@ class packToken {
   packToken(int64_t l) : base(new Token<int64_t>(l, INT)) {}
   packToken(bool b) : base(new Token<uint8_t>(b, BOOL)) {}
   packToken(size_t s) : base(new Token<int64_t>(s, INT)) {}
-  packToken(float f) : base(new Token<double>(f, REAL)) {}
-  packToken(double d) : base(new Token<double>(d, REAL)) {}
+  packToken(float f, bool isTimer = false) : base(new Token<double>(f, isTimer ? TIMER : REAL)) {}
+  packToken(double d, bool isTimer = false) : base(new Token<double>(d, isTimer ? TIMER : REAL)) {}
   packToken(const char* s) : base(new Token<std::string>(s, STR)) {}
   packToken(const std::string& s) : base(new Token<std::string>(s, STR)) {}
   packToken(const TokenMap& map);

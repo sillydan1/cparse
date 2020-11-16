@@ -89,6 +89,8 @@ bool packToken::asBool() const {
       return static_cast<Token<uint8_t>*>(base)->val != 0;
     case STR:
       return static_cast<Token<std::string>*>(base)->val != std::string();
+    case TIMER:
+      return static_cast<Token<uint64_t>*>(base)->val != 0;
     case MAP:
     case FUNC:
       return true;
@@ -110,6 +112,8 @@ double packToken::asDouble() const {
     return static_cast<Token<int64_t>*>(base)->val;
   case BOOL:
     return static_cast<Token<uint8_t>*>(base)->val;
+  case TIMER:
+    return static_cast<Token<uint64_t>*>(base)->val;
   default:
     if (!(base->type & NUM)) {
       throw bad_cast(
@@ -129,6 +133,8 @@ int64_t packToken::asInt() const {
     return static_cast<Token<int64_t>*>(base)->val;
   case BOOL:
     return static_cast<Token<uint8_t>*>(base)->val;
+  case TIMER:
+    return static_cast<Token<uint64_t>*>(base)->val;
   default:
     if (!(base->type & NUM)) {
       throw bad_cast(
