@@ -1,8 +1,7 @@
 #ifndef CPARSE_EXTENSIONS_H
 #define CPARSE_EXTENSIONS_H
 
-packToken negation(const packToken& left, const packToken& right,
-                 evaluationData* data) {
+packToken negation(const packToken& left, const packToken& right, evaluationData* data) {
     return !right.asBool();
 }
 
