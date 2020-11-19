@@ -106,14 +106,13 @@ bool packToken::asBool() const {
 
 double packToken::asDouble() const {
   switch (base->type) {
+  case TIMER:
   case REAL:
     return static_cast<Token<double>*>(base)->val;
   case INT:
     return static_cast<Token<int64_t>*>(base)->val;
   case BOOL:
     return static_cast<Token<uint8_t>*>(base)->val;
-  case TIMER:
-    return static_cast<Token<uint64_t>*>(base)->val;
   default:
     if (!(base->type & NUM)) {
       throw bad_cast(
