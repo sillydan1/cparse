@@ -24,6 +24,7 @@ std::string tokenTypeToString(const uint8_t& type) {
         case MAP: return "MAP";
         case REF: return "REF";
         case ANY_TYPE: return "ANY_TYPE";
+        case TIMER: return "TIMER";
         default: return "UNKNOWN - PLEASE EXTEND THE 'tokenTypeToString' EXTENSION";
     }
 }
