@@ -8,11 +8,11 @@ packToken Assign(const packToken& left, const packToken& right, evaluationData* 
   packToken& origin = data->left->origin;
 
   // If the left operand has a name:
-  if (key->type == STR) {
+  if (key->type == tokType_STR) {
     std::string& var_name = key.asString();
 
     // If it is an attribute of a TokenMap:
-    if (origin->type == MAP) {
+    if (origin->type == tokType_MAP) {
       TokenMap& map = origin.asMap();
       map[var_name] = right;
 
@@ -32,8 +32,8 @@ packToken Assign(const packToken& left, const packToken& right, evaluationData* 
       }
     }
   // If the left operand has an index number:
-  } else if (key->type & NUM) {
-    if (origin->type == LIST) {
+  } else if (key->type & tokType_NUM) {
+    if (origin->type == tokType_LIST) {
       TokenList& list = origin.asList();
       size_t index = key.asInt();
       list[index] = right;
@@ -47,7 +47,7 @@ packToken Assign(const packToken& left, const packToken& right, evaluationData* 
 }
 
 packToken Comma(const packToken& left, const packToken& right, evaluationData* data) {
-  if (left->type == TUPLE) {
+  if (left->type == tokType_TUPLE) {
     left.asTuple().list().push_back(right);
     return left;
   } else {
@@ -56,7 +56,7 @@ packToken Comma(const packToken& left, const packToken& right, evaluationData* d
 }
 
 packToken Colon(const packToken& left, const packToken& right, evaluationData* data) {
-  if (left->type == STUPLE) {
+  if (left->type == tokType_STUPLE) {
     left.asSTuple().list().push_back(right);
     return left;
   } else {
@@ -65,7 +65,7 @@ packToken Colon(const packToken& left, const packToken& right, evaluationData* d
 }
 
 packToken Equal(const packToken& left, const packToken& right, evaluationData* data) {
-  /*if (left->type == VAR || right->type == VAR) {
+  /*if (left->type == tokType_VAR || right->type == tokType_VAR) {
     throw undefined_operation(data->op, left, right);
   }*/
 
@@ -73,7 +73,7 @@ packToken Equal(const packToken& left, const packToken& right, evaluationData* d
 }
 
 packToken Different(const packToken& left, const packToken& right, evaluationData* data) {
-  /*if (left->type == VAR || right->type == VAR) {
+  /*if (left->type == tokType_VAR || right->type == tokType_VAR) {
     throw undefined_operation(data->op, left, right);
   }*/
 
@@ -100,7 +100,7 @@ packToken MapIndex(const packToken& p_left, const packToken& p_right, evaluation
 
 // Resolve build-in operations for non-map types, e.g.: 'str'.len()
 packToken TypeSpecificFunction(const packToken& p_left, const packToken& p_right, evaluationData* data) {
-  if (p_left->type == MAP) throw Operation::Reject();
+  if (p_left->type == tokType_MAP) throw Operation::Reject();
 
   TokenMap& attr_map = calculator::type_attribute_map()[p_left->type];
   std::string& key = p_right.asString();
@@ -180,7 +180,7 @@ packToken FormatOperation(const packToken& p_left, const packToken& p_right, eva
 
   Tuple right;
 
-  if (p_right->type == TUPLE) {
+  if (p_right->type == tokType_TUPLE) {
     right = p_right.asTuple();
   } else {
     right = Tuple(p_right);
@@ -202,7 +202,7 @@ packToken FormatOperation(const packToken& p_left, const packToken& p_right, eva
     }
 
     // Replace it by the token string representation:
-    if (token->type == STR) {
+    if (token->type == tokType_STR) {
       // Avoid using packToken::str for strings
       // or it will enclose it quotes `"str"`
       result += token.asString();
@@ -352,26 +352,26 @@ struct Startup {
 
     // Link operations to respective operators:
     opMap_t& opMap = calculator::Default().opMap;
-    opMap.add({ANY_TYPE, ":=", ANY_TYPE}, &Assign);
-    opMap.add({ANY_TYPE, "=", ANY_TYPE}, &Assign);
-    opMap.add({ANY_TYPE, ",", ANY_TYPE}, &Comma);
-    opMap.add({ANY_TYPE, ":", ANY_TYPE}, &Colon);
-    opMap.add({ANY_TYPE, "==", ANY_TYPE}, &Equal);
-    opMap.add({ANY_TYPE, "!=", ANY_TYPE}, &Different);
-    opMap.add({MAP, "[]", STR}, &MapIndex);
-    opMap.add({ANY_TYPE, ".", STR}, &TypeSpecificFunction);
-    opMap.add({MAP, ".", STR}, &MapIndex);
-    opMap.add({STR, "%", ANY_TYPE}, &FormatOperation);
+    opMap.add({tokType_ANY_TYPE, ":=", tokType_ANY_TYPE}, &Assign);
+    opMap.add({tokType_ANY_TYPE, "=", tokType_ANY_TYPE}, &Assign);
+    opMap.add({tokType_ANY_TYPE, ",", tokType_ANY_TYPE}, &Comma);
+    opMap.add({tokType_ANY_TYPE, ":", tokType_ANY_TYPE}, &Colon);
+    opMap.add({tokType_ANY_TYPE, "==", tokType_ANY_TYPE}, &Equal);
+    opMap.add({tokType_ANY_TYPE, "!=", tokType_ANY_TYPE}, &Different);
+    opMap.add({tokType_MAP, "[]", tokType_STR}, &MapIndex);
+    opMap.add({tokType_ANY_TYPE, ".", tokType_STR}, &TypeSpecificFunction);
+    opMap.add({tokType_MAP, ".", tokType_STR}, &MapIndex);
+    opMap.add({tokType_STR, "%", tokType_ANY_TYPE}, &FormatOperation);
 
     // Note: The order is important:
-    opMap.add({NUM, ANY_OP, NUM}, &NumeralOperation);
-    opMap.add({UNARY, ANY_OP, NUM}, &UnaryNumeralOperation);
-    opMap.add({STR, ANY_OP, STR}, &StringOnStringOperation);
-    opMap.add({STR, ANY_OP, NUM}, &StringOnNumberOperation);
-    opMap.add({NUM, ANY_OP, STR}, &NumberOnStringOperation);
-    opMap.add({LIST, ANY_OP, NUM}, &ListOnNumberOperation);
-    opMap.add({LIST, ANY_OP, LIST}, &ListOnListOperation);
-    opMap.add({UNARY, "!", BOOLEAN}, &negation);
+    opMap.add({tokType_NUM, ANY_OP, tokType_NUM}, &NumeralOperation);
+    opMap.add({tokType_UNARY, ANY_OP, tokType_NUM}, &UnaryNumeralOperation);
+    opMap.add({tokType_STR, ANY_OP, tokType_STR}, &StringOnStringOperation);
+    opMap.add({tokType_STR, ANY_OP, tokType_NUM}, &StringOnNumberOperation);
+    opMap.add({tokType_NUM, ANY_OP, tokType_STR}, &NumberOnStringOperation);
+    opMap.add({tokType_LIST, ANY_OP, tokType_NUM}, &ListOnNumberOperation);
+    opMap.add({tokType_LIST, ANY_OP, tokType_LIST}, &ListOnListOperation);
+    opMap.add({tokType_UNARY, "!", tokType_BOOL}, &negation);
   }
 } __CPARSE_STARTUP;
 

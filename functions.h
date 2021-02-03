@@ -12,7 +12,7 @@ class Function : public TokenBase {
   static packToken call(packToken _this, const Function* func,
                         TokenList* args, TokenMap scope);
  public:
-  Function() : TokenBase(FUNC) {}
+  Function() : TokenBase(tokType_FUNC) {}
   virtual ~Function() {}
 
  public:

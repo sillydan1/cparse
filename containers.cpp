@@ -58,7 +58,7 @@ packToken TokenList::default_constructor(TokenMap scope) {
   TokenList list = scope["args"].asList();
 
   // If the only argument is iterable:
-  if (list.list().size() == 1 && list.list()[0]->type & IT) {
+  if (list.list().size() == 1 && list.list()[0]->type & tokType_IT) {
     TokenList new_list;
     Iterator* it = static_cast<Iterable*>(list.list()[0].token())->getIterator();
 

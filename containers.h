@@ -36,7 +36,7 @@ struct Iterable : public TokenBase {
 
 // Iterator super class.
 struct Iterator : public Iterable {
-  Iterator() : Iterable(IT) {}
+  Iterator() : Iterable(tokType_IT) {}
   virtual ~Iterator() {}
   // Return the next position of the iterator.
   // When it reaches the end it should return NULL
@@ -96,12 +96,12 @@ struct TokenMap : public Container<MapData_t>, public Iterable {
 
  public:
   TokenMap(TokenMap* parent = &TokenMap::base_map())
-          : Container(parent), Iterable(MAP) {
+          : Container(parent), Iterable(tokType_MAP) {
     // For the TokenBase super class
-    this->type = MAP;
+    this->type = tokType_MAP;
   }
   TokenMap(const TokenMap& other) : Container(other) {
-    this->type = MAP;
+    this->type = tokType_MAP;
   }
 
   virtual ~TokenMap() {}
@@ -160,7 +160,7 @@ struct TokenList : public Container<TokenList_t>, public Iterable {
   }
 
  public:
-  TokenList() { this->type = LIST; }
+  TokenList() { this->type = tokType_LIST; }
   virtual ~TokenList() {}
 
   packToken& operator[](const uint64_t idx) const {
@@ -186,15 +186,15 @@ struct TokenList : public Container<TokenList_t>, public Iterable {
 
 class Tuple : public TokenList {
  public:
-  Tuple() { this->type = TUPLE; }
+  Tuple() { this->type = tokType_TUPLE; }
   Tuple(const TokenBase* first) {
-    this->type = TUPLE;
+    this->type = tokType_TUPLE;
     list().push_back(packToken(first->clone()));
   }
   Tuple(const packToken first) : Tuple(first.token()) {}
 
   Tuple(const TokenBase* first, const TokenBase* second) {
-    this->type = TUPLE;
+    this->type = tokType_TUPLE;
     list().push_back(packToken(first->clone()));
     list().push_back(packToken(second->clone()));
   }
@@ -219,15 +219,15 @@ class Tuple : public TokenList {
 // I haven't decided yet. Suggestions accepted.
 class STuple : public Tuple {
  public:
-  STuple() { this->type = STUPLE; }
+  STuple() { this->type = tokType_STUPLE; }
   STuple(const TokenBase* first) {
-    this->type = STUPLE;
+    this->type = tokType_STUPLE;
     list().push_back(packToken(first->clone()));
   }
   STuple(const packToken first) : STuple(first.token()) {}
 
   STuple(const TokenBase* first, const TokenBase* second) {
-    this->type = STUPLE;
+    this->type = tokType_STUPLE;
     list().push_back(packToken(first->clone()));
     list().push_back(packToken(second->clone()));
   }

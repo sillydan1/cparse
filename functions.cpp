@@ -20,7 +20,7 @@ packToken Function::call(packToken _this, const Function* func,
 
   while (args_it != args->list().end() && names_it != arg_names.end()) {
     // If the positional argument list is over:
-    if ((*args_it)->type == STUPLE) break;
+    if ((*args_it)->type == tokType_STUPLE) break;
 
     // Else add it to the local namespace:
     local[*names_it] = *args_it;
@@ -34,7 +34,7 @@ packToken Function::call(packToken _this, const Function* func,
   TokenList arglist;
   for (; args_it != args->list().end(); ++args_it) {
     // If there is a keyword argument:
-    if ((*args_it)->type == STUPLE) break;
+    if ((*args_it)->type == tokType_STUPLE) break;
     // Else add it to arglist:
     arglist.list().push_back(*args_it);
   }
@@ -44,7 +44,7 @@ packToken Function::call(packToken _this, const Function* func,
   for (; args_it != args->list().end(); ++args_it) {
     packToken& arg = *args_it;
 
-    if (arg->type != STUPLE) {
+    if (arg->type != tokType_STUPLE) {
       throw syntax_error("Positional argument follows keyword argument");
     }
 
@@ -54,7 +54,7 @@ packToken Function::call(packToken _this, const Function* func,
       throw syntax_error("Keyword tuples must have exactly 2 items!");
     }
 
-    if (st->list()[0]->type != STR) {
+    if (st->list()[0]->type != tokType_STR) {
       throw syntax_error("Keyword first argument should be of type string!");
     }
 

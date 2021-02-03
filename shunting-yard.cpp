@@ -15,7 +15,7 @@
 
 // Convert a type into an unique mask for bit wise operations:
 uint32_t Operation::mask(tokType_t type) {
-  if (type == ANY_TYPE) {
+  if (type == tokType_ANY_TYPE) {
     return 0xFFFF;
   } else {
     return ((type & 0xE0) << 24) | (1 << (type & 0x1F));
@@ -66,9 +66,9 @@ inline std::string normalize_op(std::string op) {
 // Use this function to discard a reference to an object
 // And obtain the original TokenBase*.
 // Please note that it only deletes memory if the token
-// is of type REF.
+// is of type tokType_REF.
 TokenBase* resolve_reference(TokenBase* b, TokenMap* scope = 0) {
-  if (b->type & REF) {
+  if (b->type & tokType_REF) {
     // Resolve the reference:
     RefToken* ref = static_cast<RefToken*>(b);
     TokenBase* value = ref->resolve(scope);
@@ -126,21 +126,21 @@ void rpnBuilder::handle_opStack(const std::string& op) {
     while (!opStack.empty() &&
         opp.prec(op) >= opp.prec(opStack.top())) {
       cur_op = normalize_op(opStack.top());
-      rpn.push(new Token<std::string>(cur_op, OP));
+      rpn.push(new Token<std::string>(cur_op, tokType_OP));
       opStack.pop();
     }
   } else {
     while (!opStack.empty() &&
         opp.prec(op) > opp.prec(opStack.top())) {
       cur_op = normalize_op(opStack.top());
-      rpn.push(new Token<std::string>(cur_op, OP));
+      rpn.push(new Token<std::string>(cur_op, tokType_OP));
       opStack.pop();
     }
   }
 }
 
 void rpnBuilder::handle_binary(const std::string& op) {
-  // Handle OP precedence
+  // Handle tokType_OP precedence
   handle_opStack(op);
   // Then push the current op into the stack:
   opStack.push(op);
@@ -155,12 +155,12 @@ void rpnBuilder::handle_left_unary(const std::string& unary_op) {
 
 // Convert right unary operators to binary and handle them:
 void rpnBuilder::handle_right_unary(const std::string& unary_op) {
-  // Handle OP precedence:
+  // Handle tokType_OP precedence:
   handle_opStack(unary_op);
   // Add the unary token:
   this->rpn.push(new TokenUnary());
   // Then add the current op directly into the rpn:
-  rpn.push(new Token<std::string>(normalize_op(unary_op), OP));
+  rpn.push(new Token<std::string>(normalize_op(unary_op), tokType_OP));
 }
 
 // Find out if op is a binary or unary operator and handle it:
@@ -222,7 +222,7 @@ void rpnBuilder::close_bracket(const std::string& bracket) {
   std::string cur_op;
   while (opStack.size() && opStack.top() != bracket) {
     cur_op = normalize_op(opStack.top());
-    rpn.push(new Token<std::string>(cur_op, OP));
+    rpn.push(new Token<std::string>(cur_op, tokType_OP));
     opStack.pop();
   }
 
@@ -283,10 +283,10 @@ TokenQueue_t calculator::toRPN(const char* expr,
 
       // If the number was not a float:
       if (!strchr(".eE", *nextChar)) {
-        data.handle_token(new Token<int64_t>(_int, INTEGRAL));
+        data.handle_token(new Token<int64_t>(_int, tokType_INT));
       } else {
         double digit = strtod(expr, &nextChar);
-        data.handle_token(new Token<double>(digit, REAL));
+        data.handle_token(new Token<double>(digit, tokType_REAL));
       }
 
       expr = nextChar;
@@ -314,7 +314,7 @@ TokenQueue_t calculator::toRPN(const char* expr,
           data.handle_token(new RefToken(key, copy));
         } else {
           // Save the variable name:
-          data.handle_token(new Token<std::string>(key, VAR));
+          data.handle_token(new Token<std::string>(key, tokType_VAR));
         }
       }
     } else if (*expr == '\'' || *expr == '"') {
@@ -353,7 +353,7 @@ TokenQueue_t calculator::toRPN(const char* expr,
                            ") at end of string declaration: " + squote + ss.str() + ".");
       }
       ++expr;
-      data.handle_token(new Token<std::string>(ss.str(), STR));
+      data.handle_token(new Token<std::string>(ss.str(), tokType_STR));
     } else {
       // Otherwise, the variable is an operator or paranthesis.
       switch (*expr) {
@@ -464,7 +464,7 @@ TokenQueue_t calculator::toRPN(const char* expr,
   std::string cur_op;
   while (!data.opStack.empty()) {
     cur_op = normalize_op(data.opStack.top());
-    data.rpn.push(new Token<std::string>(cur_op, OP));
+    data.rpn.push(new Token<std::string>(cur_op, tokType_OP));
     data.opStack.pop();
   }
 
@@ -502,7 +502,7 @@ TokenBase* calculator::calculate(const TokenQueue_t& rpn, TokenMap scope,
     data.rpn.pop();
 
     // Operator:
-    if (base->type == OP) {
+    if (base->type == tokType_OP) {
       data.op = static_cast<Token<std::string>*>(base)->val;
       delete base;
 
@@ -515,34 +515,34 @@ TokenBase* calculator::calculate(const TokenQueue_t& rpn, TokenMap scope,
       TokenBase* r_token = evaluation.top(); evaluation.pop();
       TokenBase* l_token = evaluation.top(); evaluation.pop();
 
-      if (r_token->type & REF) {
+      if (r_token->type & tokType_REF) {
         data.right.reset(static_cast<RefToken*>(r_token));
         r_token = data.right->resolve(&data.scope);
-      } else if (r_token->type == VAR) {
+      } else if (r_token->type == tokType_VAR) {
         packToken key = static_cast<Token<std::string>*>(r_token)->val;
         data.right.reset(new RefToken(key));
       } else {
         data.right.reset(new RefToken());
       }
 
-      if (l_token->type & REF) {
+      if (l_token->type & tokType_REF) {
         data.left.reset(static_cast<RefToken*>(l_token));
         l_token = data.left->resolve(&data.scope);
-      } else if (l_token->type == VAR) {
+      } else if (l_token->type == tokType_VAR) {
         packToken key = static_cast<Token<std::string>*>(l_token)->val;
         data.left.reset(new RefToken(key));
       } else {
         data.left.reset(new RefToken());
       }
 
-      if (l_token->type == FUNC && data.op == "()") {
+      if (l_token->type == tokType_FUNC && data.op == "()") {
         // * * * * * Resolve Function Calls: * * * * * //
 
         Function* l_func = static_cast<Function*>(l_token);
 
         // Collect the parameter tuple:
         Tuple right;
-        if (r_token->type == TUPLE) {
+        if (r_token->type == tokType_TUPLE) {
           right = *static_cast<Tuple*>(r_token);
         } else {
           right = Tuple(r_token);
@@ -550,7 +550,7 @@ TokenBase* calculator::calculate(const TokenQueue_t& rpn, TokenMap scope,
         delete r_token;
 
         packToken _this;
-        if (data.left->origin->type != NONE) {
+        if (data.left->origin->type != tokType_NONE) {
           _this = data.left->origin;
         } else {
           _this = data.scope;
@@ -594,7 +594,7 @@ TokenBase* calculator::calculate(const TokenQueue_t& rpn, TokenMap scope,
           throw undefined_operation(data.op, l_pack, r_pack);
         }
       }
-    } else if (base->type == VAR) {  // Variable
+    } else if (base->type == tokType_VAR) {  // Variable
       packToken* value = NULL;
       std::string key = static_cast<Token<std::string>*>(base)->val;
 

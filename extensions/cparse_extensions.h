@@ -7,24 +7,24 @@ packToken negation(const packToken& left, const packToken& right, evaluationData
 
 std::string tokenTypeToString(const uint8_t& type) {
     switch (type) {
-        case NONE: return "NONE";
-        case OP: return "OP";
-        case UNARY: return "UNARY";
-        case VAR: return "VAR";
-        case STR: return "STR";
-        case FUNC: return "FUNC";
-        case NUM: return "NUM";
-        case REAL: return "REAL";
-        case INTEGRAL: return "INTEGRAL";
-        case BOOLEAN: return "BOOLEAN";
-        case IT: return "IT";
-        case LIST: return "LIST";
-        case TUPLE: return "TUPLE";
-        case STUPLE: return "STUPLE";
-        case MAP: return "MAP";
-        case REF: return "REF";
-        case ANY_TYPE: return "ANY_TYPE";
-        case TIMER: return "TIMER";
+        case tokType_NONE: return "tokType_NONE";
+        case tokType_OP: return "tokType_OP";
+        case tokType_UNARY: return "tokType_UNARY";
+        case tokType_VAR: return "tokType_VAR";
+        case tokType_STR: return "tokType_STR";
+        case tokType_FUNC: return "tokType_FUNC";
+        case tokType_NUM: return "tokType_NUM";
+        case tokType_REAL: return "tokType_REAL";
+        case tokType_INT: return "tokType_INT";
+        case tokType_BOOL: return "tokType_BOOL";
+        case tokType_IT: return "tokType_IT";
+        case tokType_LIST: return "tokType_LIST";
+        case tokType_TUPLE: return "tokType_TUPLE";
+        case tokType_STUPLE: return "tokType_STUPLE";
+        case tokType_MAP: return "tokType_MAP";
+        case tokType_REF: return "tokType_REF";
+        case tokType_ANY_TYPE: return "tokType_ANY_TYPE";
+        case tokType_TIMER: return "tokType_TIMER";
         default: return "UNKNOWN - PLEASE EXTEND THE 'tokenTypeToString' EXTENSION";
     }
 }

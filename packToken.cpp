@@ -26,7 +26,7 @@ packToken& packToken::operator=(const packToken& t) {
 }
 
 bool packToken::operator==(const packToken& token) const {
-  if (NUM & token.base->type & base->type) {
+  if (tokType_NUM & token.base->type & base->type) {
     return token.asDouble() == asDouble();
   }
 
@@ -51,28 +51,28 @@ std::ostream& operator<<(std::ostream &os, const packToken& t) {
 }
 
 packToken& packToken::operator[](const std::string& key) {
-  if (base->type != MAP) {
+  if (base->type != tokType_MAP) {
     throw bad_cast(
       "The Token is not a map!");
   }
   return (*static_cast<TokenMap*>(base))[key];
 }
 const packToken& packToken::operator[](const std::string& key) const {
-  if (base->type != MAP) {
+  if (base->type != tokType_MAP) {
     throw bad_cast(
       "The Token is not a map!");
   }
   return (*static_cast<TokenMap*>(base))[key];
 }
 packToken& packToken::operator[](const char* key) {
-  if (base->type != MAP) {
+  if (base->type != tokType_MAP) {
     throw bad_cast(
       "The Token is not a map!");
   }
   return (*static_cast<TokenMap*>(base))[key];
 }
 const packToken& packToken::operator[](const char* key) const {
-  if (base->type != MAP) {
+  if (base->type != tokType_MAP) {
     throw bad_cast(
       "The Token is not a map!");
   }
@@ -81,23 +81,23 @@ const packToken& packToken::operator[](const char* key) const {
 
 bool packToken::asBool() const {
   switch (base->type) {
-    case REAL:
+    case tokType_REAL:
       return static_cast<Token<double>*>(base)->val != 0;
-    case INTEGRAL:
+    case tokType_INT:
       return static_cast<Token<int64_t>*>(base)->val != 0;
-    case BOOLEAN:
+    case tokType_BOOL:
       return static_cast<Token<uint8_t>*>(base)->val != 0;
-    case STR:
+    case tokType_STR:
       return static_cast<Token<std::string>*>(base)->val != std::string();
-    case TIMER:
+    case tokType_TIMER:
       return static_cast<Token<uint64_t>*>(base)->val != 0;
-    case MAP:
-    case FUNC:
+    case tokType_MAP:
+    case tokType_FUNC:
       return true;
-    case NONE:
+    case tokType_NONE:
       return false;
-    case TUPLE:
-    case STUPLE:
+    case tokType_TUPLE:
+    case tokType_STUPLE:
       return static_cast<Tuple*>(base)->list().size() != 0;
     default:
       throw bad_cast("Token type can not be cast to boolean!");
@@ -106,15 +106,15 @@ bool packToken::asBool() const {
 
 double packToken::asDouble() const {
   switch (base->type) {
-  case TIMER:
-  case REAL:
+  case tokType_TIMER:
+  case tokType_REAL:
     return static_cast<Token<double>*>(base)->val;
-  case INTEGRAL:
+  case tokType_INT:
     return static_cast<Token<int64_t>*>(base)->val;
-  case BOOLEAN:
+  case tokType_BOOL:
     return static_cast<Token<uint8_t>*>(base)->val;
   default:
-    if (!(base->type & NUM)) {
+    if (!(base->type & tokType_NUM)) {
       throw bad_cast(
         "The Token is not a number!");
     } else {
@@ -126,15 +126,15 @@ double packToken::asDouble() const {
 
 int64_t packToken::asInt() const {
   switch (base->type) {
-  case TIMER:
-  case REAL:
+  case tokType_TIMER:
+  case tokType_REAL:
     return static_cast<Token<double>*>(base)->val;
-  case INTEGRAL:
+  case tokType_INT:
     return static_cast<Token<int64_t>*>(base)->val;
-  case BOOLEAN:
+  case tokType_BOOL:
     return static_cast<Token<uint8_t>*>(base)->val;
   default:
-    if (!(base->type & NUM)) {
+    if (!(base->type & tokType_NUM)) {
       throw bad_cast(
         "The Token is not a number!");
     } else {
@@ -145,7 +145,7 @@ int64_t packToken::asInt() const {
 }
 
 std::string& packToken::asString() const {
-  if (base->type != STR && base->type != VAR && base->type != OP) {
+  if (base->type != tokType_STR && base->type != tokType_VAR && base->type != tokType_OP) {
     throw bad_cast(
       "The Token is not a string!");
   }
@@ -153,7 +153,7 @@ std::string& packToken::asString() const {
 }
 
 TokenMap& packToken::asMap() const {
-  if (base->type != MAP) {
+  if (base->type != tokType_MAP) {
     throw bad_cast(
       "The Token is not a map!");
   }
@@ -161,7 +161,7 @@ TokenMap& packToken::asMap() const {
 }
 
 TokenList& packToken::asList() const {
-  if (base->type != LIST) {
+  if (base->type != tokType_LIST) {
     throw bad_cast(
       "The Token is not a list!");
   }
@@ -169,7 +169,7 @@ TokenList& packToken::asList() const {
 }
 
 Tuple& packToken::asTuple() const {
-  if (base->type != TUPLE) {
+  if (base->type != tokType_TUPLE) {
     throw bad_cast(
       "The Token is not a tuple!");
   }
@@ -177,7 +177,7 @@ Tuple& packToken::asTuple() const {
 }
 
 STuple& packToken::asSTuple() const {
-  if (base->type != STUPLE) {
+  if (base->type != tokType_STUPLE) {
     throw bad_cast(
       "The Token is not an special tuple!");
   }
@@ -185,7 +185,7 @@ STuple& packToken::asSTuple() const {
 }
 
 Function* packToken::asFunc() const {
-  if (base->type != FUNC) {
+  if (base->type != tokType_FUNC) {
     throw bad_cast(
       "The Token is not a function!");
   }
@@ -209,7 +209,7 @@ std::string packToken::str(const TokenBase* base, uint32_t nest) {
 
   if (!base) return "undefined";
 
-  if (base->type & REF) {
+  if (base->type & tokType_REF) {
     base = static_cast<const RefToken*>(base)->resolve();
     name = static_cast<const RefToken*>(base)->key.str();
   }
@@ -226,32 +226,32 @@ std::string packToken::str(const TokenBase* base, uint32_t nest) {
   /* * * * * Stringify the token: * * * * */
 
   switch (base->type) {
-    case NONE:
+    case tokType_NONE:
       return "None";
-    case UNARY:
+    case tokType_UNARY:
       return "UnaryToken";
-    case OP:
+    case tokType_OP:
       return static_cast<const Token<std::string>*>(base)->val;
-    case VAR:
+    case tokType_VAR:
       return static_cast<const Token<std::string>*>(base)->val;
-    case REAL:
+    case tokType_REAL:
       ss << static_cast<const Token<double>*>(base)->val;
       return ss.str();
-    case INTEGRAL:
+    case tokType_INT:
       ss << static_cast<const Token<int64_t>*>(base)->val;
       return ss.str();
-    case BOOLEAN:
+    case tokType_BOOL:
       boolval = static_cast<const Token<uint8_t>*>(base)->val;
       return boolval ? "True" : "False";
-    case STR:
+    case tokType_STR:
       return "\"" + static_cast<const Token<std::string>*>(base)->val + "\"";
-    case FUNC:
+    case tokType_FUNC:
       func = static_cast<const Function*>(base);
       if (func->name().size()) return "[Function: " + func->name() + "]";
       if (name.size()) return "[Function: " + name + "]";
       return "[Function]";
-    case TUPLE:
-    case STUPLE:
+    case tokType_TUPLE:
+    case tokType_STUPLE:
       if (nest == 0) return "[Tuple]";
       ss << "(";
       first = true;
@@ -271,7 +271,7 @@ std::string packToken::str(const TokenBase* base, uint32_t nest) {
         ss << ")";
       }
       return ss.str();
-    case MAP:
+    case tokType_MAP:
       if (nest == 0) return "[Map]";
       tmap = &(static_cast<const TokenMap*>(base)->map());
       if (tmap->size() == 0) return "{}";
@@ -282,7 +282,7 @@ std::string packToken::str(const TokenBase* base, uint32_t nest) {
       }
       ss << " }";
       return ss.str();
-    case LIST:
+    case tokType_LIST:
       if (nest == 0) return "[List]";
       tlist = &(static_cast<const TokenList*>(base)->list());
       if (tlist->size() == 0) return "[]";
@@ -294,7 +294,7 @@ std::string packToken::str(const TokenBase* base, uint32_t nest) {
       ss << " ]";
       return ss.str();
     default:
-      if (base->type & IT) {
+      if (base->type & tokType_IT) {
         return "[Iterator]";
       }
       return "unknown_type";

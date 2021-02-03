@@ -23,14 +23,14 @@ class packToken {
 
   template<class C>
   packToken(C c, tokType type) : base(new Token<C>(c, type)) {}
-  packToken(int i) : base(new Token<int64_t>(i, INTEGRAL)) {}
-  packToken(int64_t l) : base(new Token<int64_t>(l, INTEGRAL)) {}
-  packToken(bool b) : base(new Token<uint8_t>(b, BOOLEAN)) {}
-  packToken(size_t s) : base(new Token<int64_t>(s, INTEGRAL)) {}
-  packToken(float f, bool isTimer = false) : base(new Token<double>(f, isTimer ? TIMER : REAL)) {}
-  packToken(double d, bool isTimer = false) : base(new Token<double>(d, isTimer ? TIMER : REAL)) {}
-  packToken(const char* s) : base(new Token<std::string>(s, STR)) {}
-  packToken(const std::string& s) : base(new Token<std::string>(s, STR)) {}
+  packToken(int i) : base(new Token<int64_t>(i, tokType_INT)) {}
+  packToken(int64_t l) : base(new Token<int64_t>(l, tokType_INT)) {}
+  packToken(bool b) : base(new Token<uint8_t>(b, tokType_BOOL)) {}
+  packToken(size_t s) : base(new Token<int64_t>(s, tokType_INT)) {}
+  packToken(float f, bool isTimer = false) : base(new Token<double>(f, isTimer ? tokType_TIMER : tokType_REAL)) {}
+  packToken(double d, bool isTimer = false) : base(new Token<double>(d, isTimer ? tokType_TIMER : tokType_REAL)) {}
+  packToken(const char* s) : base(new Token<std::string>(s, tokType_STR)) {}
+  packToken(const std::string& s) : base(new Token<std::string>(s, tokType_STR)) {}
   packToken(const TokenMap& map);
   packToken(const TokenList& list);
   ~packToken() { delete base; }

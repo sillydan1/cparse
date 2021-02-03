@@ -24,31 +24,31 @@ typedef uint8_t tokType_t;
 typedef uint64_t opID_t;
 enum tokType {
   // Internal types:
-  NONE, OP, UNARY, VAR,
+  tokType_NONE, tokType_OP, tokType_UNARY, tokType_VAR,
 
   // Base types:
   // Note: The mask system accepts at most 29 (32-3) different base types.
-  STR, FUNC,
+  tokType_STR, tokType_FUNC,
 
   // Numerals:
-  NUM = 0x20,   // Everything with the bit 0x20 set is a number.
-  REAL = 0x21,  // == 0x20 + 0x1 => Real numbers.
-  INTEGRAL = 0x22,   // == 0x20 + 0x2 => Integral numbers.
-  BOOLEAN = 0x23,  // == 0x20 + 0x3 => Boolean Type.
-  TIMER = 0x24, // == 0x20 + 0x4 => Timer Type. ++++++++++++++ TTA EXTENSION ++++++++++++++
+  tokType_NUM = 0x20,   // Everything with the bit 0x20 set is a number.
+  tokType_REAL = 0x21,  // == 0x20 + 0x1 => Real numbers.
+  tokType_INT = 0x22,   // == 0x20 + 0x2 => Integral numbers.
+  tokType_BOOL = 0x23,  // == 0x20 + 0x3 => Boolean Type.
+  tokType_TIMER = 0x24, // == 0x20 + 0x4 => Timer Type. ++++++++++++++ TTA EXTENSION ++++++++++++++
 
   // Complex types:
-  IT = 0x40,      // Everything with the bit 0x40 set are iterators.
-  LIST = 0x41,    // == 0x40 + 0x01 => Lists are iterators.
-  TUPLE = 0x42,   // == 0x40 + 0x02 => Tuples are iterators.
-  STUPLE = 0x43,  // == 0x40 + 0x03 => ArgTuples are iterators.
-  MAP = 0x44,     // == 0x40 + 0x04 => Maps are Iterators
+  tokType_IT = 0x40,      // Everything with the bit 0x40 set are iterators.
+  tokType_LIST = 0x41,    // == 0x40 + 0x01 => Lists are iterators.
+  tokType_TUPLE = 0x42,   // == 0x40 + 0x02 => Tuples are iterators.
+  tokType_STUPLE = 0x43,  // == 0x40 + 0x03 => ArgTuples are iterators.
+  tokType_MAP = 0x44,     // == 0x40 + 0x04 => Maps are Iterators
 
   // References are internal tokens used by the calculator:
-  REF = 0x80,
+  tokType_REF = 0x80,
 
   // Mask used when defining operations:
-  ANY_TYPE = 0xFF
+  tokType_ANY_TYPE = 0xFF
 };
 
 #define ANY_OP ""
@@ -73,14 +73,14 @@ template<class T> class Token : public TokenBase {
 };
 
 struct TokenNone : public TokenBase {
-  TokenNone() : TokenBase(NONE) {}
+  TokenNone() : TokenBase(tokType_NONE) {}
   virtual TokenBase* clone() const {
     return new TokenNone(*this);
   }
 };
 
 struct TokenUnary : public TokenBase {
-  TokenUnary() : TokenBase(UNARY) {}
+  TokenUnary() : TokenBase(tokType_UNARY) {}
   virtual TokenBase* clone() const {
     return new TokenUnary(*this);
   }
@@ -309,16 +309,16 @@ class RefToken : public TokenBase {
   packToken key;
   packToken origin;
   RefToken(packToken k, TokenBase* v, packToken m = packToken::None()) :
-    TokenBase(v->type | REF), original_value(v), key(std::forward<packToken>(k)), origin(std::forward<packToken>(m)) {}
+          TokenBase(v->type | tokType_REF), original_value(v), key(std::forward<packToken>(k)), origin(std::forward<packToken>(m)) {}
   RefToken(packToken k = packToken::None(), packToken v = packToken::None(), packToken m = packToken::None()) :
-    TokenBase(v->type | REF), original_value(std::forward<packToken>(v)), key(std::forward<packToken>(k)), origin(std::forward<packToken>(m)) {}
+          TokenBase(v->type | tokType_REF), original_value(std::forward<packToken>(v)), key(std::forward<packToken>(k)), origin(std::forward<packToken>(m)) {}
 
   TokenBase* resolve(TokenMap* localScope = 0) const {
     TokenBase* result = 0;
 
-    // Local variables have no origin == NONE,
+    // Local variables have no origin == tokType_NONE,
     // thus, require a localScope to be resolved:
-    if (origin->type == NONE && localScope) {
+    if (origin->type == tokType_NONE && localScope) {
       // Get the most recent value from the local scope:
       packToken* r_value = localScope->find(key.asString());
       if (r_value) {

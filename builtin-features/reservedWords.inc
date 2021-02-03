@@ -35,8 +35,8 @@ void SlashStarComment(const char* expr, const char** rest, rpnBuilder* data) {
 
 void KeywordOperator(const char* expr, const char** rest, rpnBuilder* data) {
   // Convert any STuple like `a : 10` to `'a': 10`:
-  if (data->rpn.back()->type == VAR) {
-    data->rpn.back()->type = STR;
+  if (data->rpn.back()->type == tokType_VAR) {
+    data->rpn.back()->type = tokType_STR;
   }
   data->handle_op(":");
 }
@@ -53,7 +53,7 @@ void DotOperator(const char* expr, const char** rest, rpnBuilder* data) {
 
   // Parse the variable name and save it as a string:
   std::string key = rpnBuilder::parseVar(expr, rest);
-  data->handle_token(new Token<std::string>(key, STR));
+  data->handle_token(new Token<std::string>(key, tokType_STR));
 }
 
 struct Startup {

@@ -1,7 +1,7 @@
 
 namespace builtin_typeSpecificFunctions {
 
-/* * * * * MAP Type built-in functions * * * * */
+/* * * * * tokType_MAP Type built-in functions * * * * */
 
 const args_t map_pop_args = {"key", "default"};
 packToken map_pop(TokenMap scope) {
@@ -45,7 +45,7 @@ packToken default_instanceof(TokenMap scope) {
   return false;
 }
 
-/* * * * * LIST Type built-in functions * * * * */
+/* * * * * tokType_LIST Type built-in functions * * * * */
 
 const args_t push_args = {"item"};
 packToken list_push(TokenMap scope) {
@@ -65,7 +65,7 @@ packToken list_pop(TokenMap scope) {
 
   int64_t pos;
 
-  if ((*token)->type & NUM) {
+  if ((*token)->type & tokType_NUM) {
     pos = token->asInt();
 
     // So that pop(-1) is the same as pop(last_idx):
@@ -102,7 +102,7 @@ packToken list_join(TokenMap scope) {
   return result.str();
 }
 
-/* * * * * STR Type built-in functions * * * * */
+/* * * * * tokType_STR Type built-in functions * * * * */
 
 packToken string_len(TokenMap scope) {
   std::string str = scope["this"].asString();
@@ -166,13 +166,13 @@ packToken string_split(TokenMap scope) {
 
 struct Startup {
   Startup() {
-    TokenMap& base_list = calculator::type_attribute_map()[LIST];
+    TokenMap& base_list = calculator::type_attribute_map()[tokType_LIST];
     base_list["push"] = CppFunction(list_push, push_args, "push");
     base_list["pop"] = CppFunction(list_pop, list_pop_args, "pop");
     base_list["len"] = CppFunction(list_len, "len");
     base_list["join"] = CppFunction(list_join, {"chars"}, "join");
 
-    TokenMap& base_str = calculator::type_attribute_map()[STR];
+    TokenMap& base_str = calculator::type_attribute_map()[tokType_STR];
     base_str["len"] = CppFunction(&string_len, "len");
     base_str["lower"] = CppFunction(&string_lower, "lower");
     base_str["upper"] = CppFunction(&string_upper, "upper");

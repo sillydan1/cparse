@@ -16,7 +16,7 @@ packToken default_print(TokenMap scope) {
       std::cout << " ";
     }
 
-    if (item->type == STR) {
+    if (item->type == tokType_STR) {
       std::cout << item.asString();
     } else {
       std::cout << item.str();
@@ -32,7 +32,7 @@ packToken default_sum(TokenMap scope) {
   // Get the arguments:
   TokenList list = scope["args"].asList();
 
-  if (list.list().size() == 1 && list.list().front()->type == LIST) {
+  if (list.list().size() == 1 && list.list().front()->type == tokType_LIST) {
     list = list.list().front().asList();
   }
 
@@ -52,7 +52,7 @@ packToken default_eval(TokenMap scope) {
 
 packToken default_float(TokenMap scope) {
   packToken tok = scope["value"];
-  if (tok->type & NUM) return tok.asDouble();
+  if (tok->type & tokType_NUM) return tok.asDouble();
 
   // Convert it to double:
   char* rest;
@@ -70,7 +70,7 @@ packToken default_float(TokenMap scope) {
 
 packToken default_int(TokenMap scope) {
   packToken tok = scope["value"];
-  if (tok->type & NUM) return tok.asInt();
+  if (tok->type & tokType_NUM) return tok.asInt();
 
   // Convert it to double:
   char* rest;
@@ -89,7 +89,7 @@ packToken default_int(TokenMap scope) {
 packToken default_str(TokenMap scope) {
   // Return its string representation:
   packToken tok = scope["value"];
-  if (tok->type == STR) return tok;
+  if (tok->type == tokType_STR) return tok;
   return tok.str();
 }
 
@@ -98,20 +98,20 @@ packToken default_type(TokenMap scope) {
   packToken* p_type;
 
   switch (tok->type) {
-  case NONE: return "none";
-  case VAR: return "variable";
-  case REAL: return "real";
-  case INTEGRAL: return "integer";
-  case BOOLEAN: return "boolean";
-  case STR: return "string";
-  case FUNC: return "function";
-  case IT: return "iterable";
-  case TUPLE: return "tuple";
-  case STUPLE: return "argument tuple";
-  case LIST: return "list";
-  case MAP:
+  case tokType_NONE: return "none";
+  case tokType_VAR: return "variable";
+  case tokType_REAL: return "real";
+  case tokType_INT: return "integer";
+  case tokType_BOOL: return "boolean";
+  case tokType_STR: return "string";
+  case tokType_FUNC: return "function";
+  case tokType_IT: return "iterable";
+  case tokType_TUPLE: return "tuple";
+  case tokType_STUPLE: return "argument tuple";
+  case tokType_LIST: return "list";
+  case tokType_MAP:
     p_type = tok.asMap().find("__type__");
-    if (p_type && (*p_type)->type == STR) {
+    if (p_type && (*p_type)->type == tokType_STR) {
       return *p_type;
     } else  {
       return "map";
@@ -167,7 +167,7 @@ packToken default_list(TokenMap scope) {
   TokenList list = scope["args"].asList();
 
   // If the only argument is iterable:
-  if (list.list().size() == 1 && list.list()[0]->type & IT) {
+  if (list.list().size() == 1 && list.list()[0]->type & tokType_IT) {
     TokenList new_list;
     Iterator* it = static_cast<Iterable*>(list.list()[0].token())->getIterator();
 
@@ -193,7 +193,7 @@ packToken default_map(TokenMap scope) {
 packToken default_extend(TokenMap scope) {
   packToken tok = scope["value"];
 
-  if (tok->type == MAP) {
+  if (tok->type == tokType_MAP) {
     return tok.asMap().getChild();
   } else {
     throw std::runtime_error(tok.str() + " is not extensible!");
@@ -207,7 +207,7 @@ std::string packToken_str(const TokenBase* base, uint32_t nest) {
   // Find the TokenMap with the type specific functions
   // for the type of the base token:
   const TokenMap* typeFuncs;
-  if (base->type == MAP) {
+  if (base->type == tokType_MAP) {
     typeFuncs = static_cast<const TokenMap*>(base);
   } else {
     typeFuncs = &calculator::type_attribute_map()[base->type];
@@ -215,7 +215,7 @@ std::string packToken_str(const TokenBase* base, uint32_t nest) {
 
   // Check if this type has a custom stringify function:
   const packToken* p_func = typeFuncs->find("__str__");
-  if (p_func && (*p_func)->type == FUNC) {
+  if (p_func && (*p_func)->type == tokType_FUNC) {
     // Return the result of this function passing the
     // nesting level as first (and only) argument:
     func = p_func->asFunc();
