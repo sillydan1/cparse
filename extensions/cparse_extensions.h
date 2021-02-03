@@ -15,8 +15,8 @@ std::string tokenTypeToString(const uint8_t& type) {
         case FUNC: return "FUNC";
         case NUM: return "NUM";
         case REAL: return "REAL";
-        case INT: return "INT";
-        case BOOL: return "BOOL";
+        case INTEGRAL: return "INTEGRAL";
+        case BOOLEAN: return "BOOLEAN";
         case IT: return "IT";
         case LIST: return "LIST";
         case TUPLE: return "TUPLE";

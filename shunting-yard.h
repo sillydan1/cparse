@@ -33,8 +33,8 @@ enum tokType {
   // Numerals:
   NUM = 0x20,   // Everything with the bit 0x20 set is a number.
   REAL = 0x21,  // == 0x20 + 0x1 => Real numbers.
-  INT = 0x22,   // == 0x20 + 0x2 => Integral numbers.
-  BOOL = 0x23,  // == 0x20 + 0x3 => Boolean Type.
+  INTEGRAL = 0x22,   // == 0x20 + 0x2 => Integral numbers.
+  BOOLEAN = 0x23,  // == 0x20 + 0x3 => Boolean Type.
   TIMER = 0x24, // == 0x20 + 0x4 => Timer Type. ++++++++++++++ TTA EXTENSION ++++++++++++++
 
   // Complex types:

@@ -283,7 +283,7 @@ TokenQueue_t calculator::toRPN(const char* expr,
 
       // If the number was not a float:
       if (!strchr(".eE", *nextChar)) {
-        data.handle_token(new Token<int64_t>(_int, INT));
+        data.handle_token(new Token<int64_t>(_int, INTEGRAL));
       } else {
         double digit = strtod(expr, &nextChar);
         data.handle_token(new Token<double>(digit, REAL));

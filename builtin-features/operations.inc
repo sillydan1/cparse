@@ -371,7 +371,7 @@ struct Startup {
     opMap.add({NUM, ANY_OP, STR}, &NumberOnStringOperation);
     opMap.add({LIST, ANY_OP, NUM}, &ListOnNumberOperation);
     opMap.add({LIST, ANY_OP, LIST}, &ListOnListOperation);
-    opMap.add({UNARY, "!", BOOL}, &negation);
+    opMap.add({UNARY, "!", BOOLEAN}, &negation);
   }
 } __CPARSE_STARTUP;
 
